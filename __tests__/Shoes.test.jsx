@@ -46,4 +46,43 @@ describe('Shoes Component - User Story 2 (Shoe Selection)', () => {
       })
     );
   });
+
+  test('should allow removing a shoe size input field', async () => {
+    const mockUpdateSize = vi.fn();
+    const mockAddShoe = vi.fn();
+    const mockRemoveShoe = vi.fn();
+    
+    const initialShoesWithOne = [{ id: 'shoe-to-remove', size: '40' }];
+
+    const { rerender } = render(
+      <Shoes
+        updateSize={mockUpdateSize}
+        addShoe={mockAddShoe}
+        removeShoe={mockRemoveShoe}
+        shoes={initialShoesWithOne}
+      />
+    );
+
+    const shoeSizeInput = screen.getByLabelText('Shoe size / person 1');
+    expect(shoeSizeInput).toBeInTheDocument();
+
+    const removeButton = screen.getByRole('button', { name: '-' });
+    expect(removeButton).toBeInTheDocument();
+    fireEvent.click(removeButton);
+
+    expect(mockRemoveShoe).toHaveBeenCalledTimes(1);
+    expect(mockRemoveShoe).toHaveBeenCalledWith('shoe-to-remove');
+
+    const updatedShoesAfterRemoval = [];
+    rerender(
+      <Shoes
+        updateSize={mockUpdateSize}
+        addShoe={mockAddShoe}
+        removeShoe={mockRemoveShoe}
+        shoes={updatedShoesAfterRemoval}
+      />
+    );
+
+    expect(screen.queryByLabelText('Shoe size / person 1')).not.toBeInTheDocument();
+  });
 });
