@@ -10,7 +10,7 @@ describe('BookingInfo Component - User Story 1 (Input Fields)', () => {
       <BookingInfo updateBookingDetails={mockUpdateBookingDetails} />
     );
 
-    const dateInput = screen.getByLabelText('Date'); // Exakt matchning för labeltexten
+    const dateInput = screen.getByLabelText('Date');
     expect(dateInput).toBeInTheDocument();
     fireEvent.change(dateInput, { target: { name: 'when', value: '2025-12-25' } });
     expect(mockUpdateBookingDetails).toHaveBeenCalledWith(
