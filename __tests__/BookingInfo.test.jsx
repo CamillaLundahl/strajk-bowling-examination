@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import BookingInfo from '../src/components/BookingInfo/BookingInfo';
+import BookingInfo from '../src/components/BookingInfo/BookingInfo.jsx';
 import { describe, test, expect, vi } from 'vitest';
 
 describe('BookingInfo Component - User Story 1 (Input Fields)', () => {
@@ -10,8 +10,7 @@ describe('BookingInfo Component - User Story 1 (Input Fields)', () => {
       <BookingInfo updateBookingDetails={mockUpdateBookingDetails} />
     );
 
-    const dateLabel = screen.getByText('Date');
-    const dateInput = dateLabel.closest('section.input').querySelector('input[name="when"]');
+    const dateInput = screen.getByLabelText('Date'); // Exakt matchning för labeltexten
     expect(dateInput).toBeInTheDocument();
     fireEvent.change(dateInput, { target: { name: 'when', value: '2025-12-25' } });
     expect(mockUpdateBookingDetails).toHaveBeenCalledWith(
@@ -20,8 +19,7 @@ describe('BookingInfo Component - User Story 1 (Input Fields)', () => {
       })
     );
 
-    const timeLabel = screen.getByText('Time');
-    const timeInput = timeLabel.closest('section.input').querySelector('input[name="time"]');
+    const timeInput = screen.getByLabelText('Time');
     expect(timeInput).toBeInTheDocument();
     fireEvent.change(timeInput, { target: { name: 'time', value: '18:00' } });
     expect(mockUpdateBookingDetails).toHaveBeenCalledWith(
@@ -30,8 +28,7 @@ describe('BookingInfo Component - User Story 1 (Input Fields)', () => {
       })
     );
 
-    const playersLabel = screen.getByText('Number of awesome bowlers');
-    const playersInput = playersLabel.closest('section.input').querySelector('input[name="people"]');
+    const playersInput = screen.getByLabelText('Number of awesome bowlers');
     expect(playersInput).toBeInTheDocument();
     fireEvent.change(playersInput, { target: { name: 'people', value: '4' } });
     expect(mockUpdateBookingDetails).toHaveBeenCalledWith(
@@ -40,8 +37,7 @@ describe('BookingInfo Component - User Story 1 (Input Fields)', () => {
       })
     );
 
-    const lanesLabel = screen.getByText('Number of lanes');
-    const lanesInput = lanesLabel.closest('section.input').querySelector('input[name="lanes"]');
+    const lanesInput = screen.getByLabelText('Number of lanes');
     expect(lanesInput).toBeInTheDocument();
     fireEvent.change(lanesInput, { target: { name: 'lanes', value: '2' } });
     expect(mockUpdateBookingDetails).toHaveBeenCalledWith(
