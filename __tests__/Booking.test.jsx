@@ -1,8 +1,15 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, waitFor, fireEvent } from '@testing-library/react'; // Lade till fireEvent här!
 import '@testing-library/jest-dom/vitest';
-import Booking from '../src/views/Booking.jsx';
-import { BrowserRouter } from 'react-router-dom';
 import { vi } from 'vitest';
+
+import { 
+  fillBookingInfo, 
+  addAndFillShoes, 
+  renderBookingComponent, 
+  clickBookButton, 
+  mockSuccessfulFetch, 
+  expectBookingError 
+} from './booking-test-utils.jsx';
 
 const mockedUsedNavigate = vi.fn();
 vi.mock('react-router-dom', async (importOriginal) => {
@@ -12,68 +19,6 @@ vi.mock('react-router-dom', async (importOriginal) => {
     useNavigate: () => mockedUsedNavigate,
   };
 });
-
-const fillBookingInfo = (date = '2025-12-25', time = '18:00', people = '4', lanes = '1') => {
-  fireEvent.change(screen.getByLabelText(/Date/i), { target: { name: 'when', value: date } });
-  fireEvent.change(screen.getByLabelText(/Time/i), { target: { name: 'time', value: time } });
-  fireEvent.change(screen.getByLabelText(/Number of awesome bowlers/i), { target: { name: 'people', value: people } });
-  fireEvent.change(screen.getByLabelText(/Number of lanes/i), { target: { name: 'lanes', value: lanes } });
-};
-
-const addAndFillShoes = (numberOfShoes, startSize = 40) => {
-  const addShoeButton = screen.getByRole('button', { name: '+' });
-  for (let i = 0; i < numberOfShoes; i++) {
-    fireEvent.click(addShoeButton);
-  }
-
-  for (let i = 0; i < numberOfShoes; i++) {
-    const shoeInput = screen.getByLabelText(`Shoe size / person ${i + 1}`);
-    fireEvent.change(shoeInput, { target: { name: shoeInput.id, value: String(startSize + i) } });
-  }
-};
-
-const renderBookingComponent = () => {
-  render(
-    <BrowserRouter>
-      <Booking />
-    </BrowserRouter>
-  );
-};
-
-const clickBookButton = () => {
-  const bookButton = screen.getByRole('button', { name: /strIIIIIike!/i });
-  fireEvent.click(bookButton);
-};
-
-const mockSuccessfulFetch = () => {
-  global.fetch.mockImplementationOnce((url, options) => {
-    const requestBody = JSON.parse(options.body);
-    const pricePerPerson = 120;
-    const pricePerLane = 100;
-    const calculatedTotalAmount = (parseInt(requestBody.people) * pricePerPerson) + (parseInt(requestBody.lanes) * pricePerLane);
-
-    return Promise.resolve({
-      json: () => Promise.resolve({
-        bookingDetails: {
-          when: requestBody.when,
-          people: parseInt(requestBody.people),
-          lanes: parseInt(requestBody.lanes),
-          bookingId: 'MOCKID123',
-          price: calculatedTotalAmount,
-          shoes: requestBody.shoes,
-        }
-      }),
-    });
-  });
-};
-
-const expectBookingError = async (errorMessage) => {
-  await waitFor(() => {
-    expect(screen.getByText(errorMessage)).toBeInTheDocument();
-  });
-  expect(global.fetch).not.toHaveBeenCalled();
-  expect(mockedUsedNavigate).not.toHaveBeenCalled();
-};
 
 describe('Booking Component', () => {
 
@@ -144,7 +89,7 @@ describe('Booking Component', () => {
   test('should show error message if required fields are not filled', async () => {
     renderBookingComponent();
     clickBookButton();
-    await expectBookingError('Alla fälten måste vara ifyllda');
+    await expectBookingError('Alla fälten måste vara ifyllda', mockedUsedNavigate);
   });
 
   test('should show error if number of shoes does not match number of people', async () => {
@@ -152,7 +97,7 @@ describe('Booking Component', () => {
     fillBookingInfo();
     addAndFillShoes(3);
     clickBookButton();
-    await expectBookingError('Antalet skor måste stämma överens med antal spelare');
+    await expectBookingError('Antalet skor måste stämma överens med antal spelare', mockedUsedNavigate);
   });
 
   test('should show error if shoe sizes are not filled for all shoes added', async () => {
@@ -163,7 +108,7 @@ describe('Booking Component', () => {
     const shoe4Input = screen.getByLabelText(/Shoe size \/ person 4/i);
     fireEvent.change(shoe4Input, { target: { name: shoe4Input.id, value: '' } });
     clickBookButton();
-    await expectBookingError('Alla skor måste vara ifyllda');
+    await expectBookingError('Alla skor måste vara ifyllda', mockedUsedNavigate);
   });
 
   test('should show error if too many players for available lanes (max 4 per lane)', async () => {
@@ -171,6 +116,28 @@ describe('Booking Component', () => {
     fillBookingInfo('2025-12-25', '18:00', '5', '1');
     addAndFillShoes(5);
     clickBookButton();
-    await expectBookingError('Det får max vara 4 spelare per bana');
+    await expectBookingError('Det får max vara 4 spelare per bana', mockedUsedNavigate);
+  });
+
+  test('should allow removing a shoe field and update booking state', async () => {
+    renderBookingComponent();
+    
+    addAndFillShoes(1);
+    
+    const shoeInput = screen.getByLabelText(/Shoe size \/ person 1/i);
+    expect(shoeInput).toBeInTheDocument();
+
+    const removeShoeButton = screen.getByRole('button', { name: '-' });
+    fireEvent.click(removeShoeButton);
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText(/Shoe size \/ person 1/i)).not.toBeInTheDocument();
+    });
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    fillBookingInfo('2025-12-25', '18:00', '1', '1');
+    clickBookButton();
+    await expectBookingError('Antalet skor måste stämma överens med antal spelare', mockedUsedNavigate);
   });
 });
