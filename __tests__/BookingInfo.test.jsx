@@ -3,6 +3,9 @@ import BookingInfo from '../src/components/BookingInfo/BookingInfo.jsx';
 import { describe, test, expect, vi } from 'vitest';
 
 describe('BookingInfo Component - User Story 1 (Input Fields)', () => {
+  //Användaren ska kunna välja ett datum och en tid från ett kalender- och tidvalssystem.
+  //Användaren ska kunna ange antal spelare (minst 1 spelare).
+  //Användaren ska kunna reservera ett eller flera banor beroende på antal spelare.
   test('should render input fields and allow input', () => {
     const mockUpdateBookingDetails = vi.fn();
 

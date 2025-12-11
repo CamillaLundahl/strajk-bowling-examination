@@ -27,6 +27,7 @@ describe('Navigation Component', () => {
     );
   };
 
+  //Användaren ska kunna navigera från bokningsvyn till bekräftelsevyn när bokningen är klar.
   test('should render navigation links, allow toggling visibility and navigation', async () => {
     renderNavigationComponent();
 
