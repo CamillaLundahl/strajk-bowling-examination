@@ -38,6 +38,8 @@ describe('Shoes Component - User Story 2 (Shoe Selection)', () => {
     mockRemoveShoe.mockClear();
   });
 
+  //Användaren ska kunna ange skostorlek för varje spelare.
+  //Det ska vara möjligt att välja skostorlek för alla spelare som ingår i bokningen.
   test('should allow adding a shoe and entering a shoe size', async () => {
     rerenderComponent([{ id: 'shoe1', size: '' }]);
 
@@ -58,6 +60,7 @@ describe('Shoes Component - User Story 2 (Shoe Selection)', () => {
     );
   });
 
+  //Användaren ska kunna ändra skostorlek för varje spelare.
   test('should allow entering and then changing a shoe size', async () => {
     rerenderComponent([{ id: 'shoe-to-change', size: '' }]); 
 
@@ -84,6 +87,9 @@ describe('Shoes Component - User Story 2 (Shoe Selection)', () => {
     expect(shoeSizeInput.value).toBe('43');
   });
 
+  //Användaren ska kunna ta bort ett tidigare valt fält för skostorlek genom att klicka på en "-"-knapp vid varje spelare.
+  //När användaren tar bort skostorleken för en spelare ska systemet uppdatera bokningen så att inga skor längre är bokade för den spelaren.
+  //Om användaren tar bort skostorleken ska systemet inte inkludera den spelaren i skorantalet och priset för skor i den totala bokningssumman.
   test('should allow removing a shoe size input field', async () => {
     rerenderComponent([{ id: 'shoe-to-remove', size: '40' }]);
 
