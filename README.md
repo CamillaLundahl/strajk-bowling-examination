@@ -1,6 +1,7 @@
 # Strajk Bowling
 
-![GitHub Workflow Status](https://github.com/CamillaLundahl/strajk-bowling-examination/actions/workflows/run-tests.yml/badge.svg) 
+[![GitHub Workflow Status](https://github.com/CamillaLundahl/strajk-bowling-examination/actions/workflows/run-tests.yml/badge.svg)](https://github.com/CamillaLundahl/strajk-bowling-examination/actions/workflows/run-tests.yml)
+
 [![Test Coverage](https://img.shields.io/badge/Coverage-100%25%20(Statements,%20Lines,%20Funcs)-brightgreen)](./coverage/index.html)
 
 ---
